@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+aivi.db
+uploads/
+static/audio/
+static/images/dashboard_bg.png
+static/images/mascot.png
+.vscode/
+.idea/
+instance/

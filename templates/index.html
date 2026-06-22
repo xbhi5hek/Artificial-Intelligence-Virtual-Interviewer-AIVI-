@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <div class="glass" style="max-width: 600px; padding: 4rem; text-align: center;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Begin Your Evaluation</h2>
+        <p class="subtitle" style="margin: 0 auto 3rem;">Our AI will analyze your resume to construct a customized technical and behavioral interview session.</p>
+        
+        <form action="{{ url_for('main.upload') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group" style="margin-bottom: 2rem; text-align: left;">
+                <label style="color: var(--text-muted); font-size: 0.875rem;">Interview Mode</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+                    <label class="glass" style="padding: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; border-radius: 0.75rem;">
+                        <input type="radio" name="mode" value="text" checked> Text Based
+                    </label>
+                    <label class="glass" style="padding: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; border-radius: 0.75rem;">
+                        <input type="radio" name="mode" value="live"> Live Video/Voice
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 2.5rem;">
+                <div style="border: 2px dashed var(--glass-border); padding: 2rem; border-radius: 1rem; cursor: pointer;" onclick="document.getElementById('resume').click()">
+                    <span style="color: var(--text-muted);">Drop your PDF resume here or click to browse</span>
+                    <input type="file" name="resume" id="resume" accept=".pdf" required style="display: none;">
+                </div>
+            </div>
+            <button type="submit" class="btn-primary">Initialize AI Session</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('resume').onchange = function() {
+        this.parentElement.querySelector('span').innerText = this.files[0].name;
+        this.parentElement.style.borderColor = 'var(--primary)';
+    };
+</script>
+{% endblock %}

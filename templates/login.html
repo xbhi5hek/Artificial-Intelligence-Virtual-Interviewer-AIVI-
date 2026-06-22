@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <div class="mascot"></div>
+    <div class="glass auth-card">
+        <h2 style="margin-bottom: 2rem; font-size: 2rem;">Welcome Back</h2>
+        <form method="POST">
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" name="email" required placeholder="name@company.com">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary">Authenticate</button>
+        </form>
+        <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+            New to AIVI? <a href="{{ url_for('auth.register') }}" style="color: var(--primary);">Create an account</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

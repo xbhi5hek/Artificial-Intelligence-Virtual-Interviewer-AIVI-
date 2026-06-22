@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <div class="glass interview-box" style="text-align: center;">
+        <h2 style="margin-bottom: 1rem;">Performance Analysis</h2>
+        <p class="subtitle" style="margin: 0 auto 2rem;">Evaluation complete. Based on your responses, here is your AI Score.</p>
+        
+        <div class="score-display" style="margin-bottom: 2rem;">
+            {{ score }}%
+        </div>
+
+        <div class="feedback" style="text-align: left; margin-top: 2rem;">
+            <h4 style="color: white; margin-bottom: 1rem;">Constructive Feedback</h4>
+            {{ feedback }}
+        </div>
+
+        <div style="margin-top: 3rem; display: flex; gap: 1rem;">
+            <a href="{{ url_for('main.dashboard') }}" class="btn-secondary" style="flex: 1;">Return to Dashboard</a>
+            <a href="{{ url_for('main.start_interview') }}" class="btn-primary" style="flex: 1;">New Session</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
