@@ -1,0 +1,10 @@
+flask
+PyPDF2
+scikit-learn
+python-dotenv
+google-generativeai
+groq
+flask-sqlalchemy
+flask-login
+flask-bcrypt
+gtts

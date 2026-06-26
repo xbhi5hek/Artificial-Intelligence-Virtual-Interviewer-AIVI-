@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div style="margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Interview Report</h1>
+        <p class="subtitle">Session Date: {{ interview.date.strftime('%B %d, %Y at %H:%M') }}</p>
+    </div>
+
+    <div class="glass" style="padding: 3rem; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h2 style="font-size: 1.5rem;">Overall AI Score</h2>
+                <div style="color: var(--text-muted);">Skills Analyzed: {{ interview.skills }}</div>
+            </div>
+            <div class="score-display" style="font-size: 4rem;">{{ interview.score }}%</div>
+        </div>
+
+        <div class="feedback" style="margin-bottom: 2rem;">
+            <h4 style="color: white; margin-bottom: 1rem;">Comprehensive AI Feedback</h4>
+            {{ interview.feedback }}
+        </div>
+
+        <h3 style="margin-bottom: 1.5rem;">Q&A Transcript</h3>
+        {% for q in interview.questions %}
+            <div style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border);">
+                <p style="font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Q: {{ q.question_text }}</p>
+                <p style="color: white; font-style: italic;">A: {{ q.answer_text if q.answer_text else 'No answer provided' }}</p>
+            </div>
+        {% endfor %}
+
+        <div style="margin-top: 3rem;">
+            <a href="{{ url_for('main.dashboard') }}" class="btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

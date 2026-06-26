@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
+        <div>
+            <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">Mission Control</h1>
+            <p class="subtitle" style="margin-bottom: 0;">Welcome back, {{ current_user.username }}. Ready for your next session?</p>
+        </div>
+        <a href="{{ url_for('main.start_interview') }}" class="btn-primary" style="width: auto;">Start New Session</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="glass stat-card">
+            <span style="color: var(--text-muted); font-weight: 600;">Total Interviews</span>
+            <span class="stat-value">{{ interviews|length }}</span>
+        </div>
+        <div class="glass stat-card">
+            <span style="color: var(--text-muted); font-weight: 600;">Average Score</span>
+            <span class="stat-value">
+                {% if avg_score > 0 %}{{ avg_score }}%{% else %}N/A{% endif %}
+            </span>
+        </div>
+        <div class="glass stat-card">
+            <span style="color: var(--text-muted); font-weight: 600;">Active Skills</span>
+            <span class="stat-value" style="font-size: 1.5rem; margin-top: 1rem;">
+                Python, SQL, AI
+            </span>
+        </div>
+    </div>
+
+    <div class="interview-list">
+        <h3 style="margin-bottom: 1.5rem;">Recent Performance</h3>
+        {% for interview in interviews %}
+            <div class="glass interview-card">
+                <div>
+                    <strong style="font-size: 1.25rem;">{{ interview.date.strftime('%B %d, %Y') }}</strong>
+                    <div style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+                        Skills: {{ interview.skills }}
+                    </div>
+                </div>
+                <div style="text-align: right; display: flex; align-items: center; gap: 1.5rem;">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #4ade80;">{{ interview.score if interview.score is not none else '...' }}%</div>
+                    <a href="{{ url_for('main.view_report', interview_id=interview.id) }}" class="btn-secondary" style="font-size: 0.875rem;">View Report</a>
+                    <form action="{{ url_for('main.delete_interview', interview_id=interview.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;" onclick="return confirm('Delete this interview record?')">
+                            🗑️
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="glass" style="padding: 3rem; text-align: center;">
+                <p>No interview history found. Start your first session to see analytics!</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

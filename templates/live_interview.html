@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container" style="max-width: 1200px;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        
+        <!-- Video & Controls -->
+        <div class="glass" style="padding: 2rem; position: relative;">
+            <h2 style="margin-bottom: 1rem;">Live AI Interview Session</h2>
+            <div style="background: #000; border-radius: 1rem; overflow: hidden; position: relative; aspect-ratio: 16/9;">
+                <img src="{{ url_for('main.video_feed') }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <div id="status-overlay" style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 10px; height: 10px; background: #4ade80; border-radius: 50%;"></div>
+                    LIVE MONITORING ACTIVE
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button id="start-btn" class="btn-primary" onclick="startInterview()">Start Interview Session</button>
+                <button id="next-btn" class="btn-secondary" style="display: none;" onclick="nextQuestion()">Next Question</button>
+                <button id="quit-btn" class="btn-secondary" style="display: none; border-color: #ef4444; color: #ef4444;" onclick="if(confirm('Quit and get results?')) submitInterview()">Quit</button>
+            </div>
+        </div>
+
+        <!-- AI Interaction Panel -->
+        <div class="glass" style="padding: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Interviewer Console</h3>
+            
+            <div id="ai-status" style="margin-bottom: 2rem;">
+                <p style="color: var(--text-muted); font-size: 0.875rem;">Status</p>
+                <p id="status-text" style="font-weight: 600;">Waiting to start...</p>
+            </div>
+
+            <div id="question-box" style="margin-bottom: 2rem; display: none;">
+                <p style="color: var(--text-muted); font-size: 0.875rem;">Current Question</p>
+                <p id="current-question" style="font-size: 1.1rem; font-weight: 700; margin-top: 0.5rem;"></p>
+            </div>
+
+            <div id="answer-box" style="margin-bottom: 2rem; display: none;">
+                <p style="color: var(--text-muted); font-size: 0.875rem;">Your Response (STT)</p>
+                <div id="stt-output" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem; min-height: 100px; font-style: italic;">
+                    Listening...
+                </div>
+            </div>
+
+            <form id="interview-form" action="{{ url_for('main.submit', interview_id=interview_id) }}" method="POST" style="display: none;">
+                <!-- Hidden inputs to store answers for final submission -->
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = {{ questions|tojson }};
+    let currentIdx = 0;
+    const answers = [];
+
+    async function startInterview() {
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'block';
+        document.getElementById('quit-btn').style.display = 'block';
+        document.getElementById('question-box').style.display = 'block';
+        document.getElementById('answer-box').style.display = 'block';
+        nextQuestion();
+    }
+
+    async function nextQuestion() {
+        if (currentIdx >= questions.length) {
+            submitInterview();
+            return;
+        }
+
+        const q = questions[currentIdx];
+        document.getElementById('current-question').innerText = q;
+        document.getElementById('status-text').innerText = "AI is speaking...";
+        document.getElementById('stt-output').innerText = "Waiting for question to finish...";
+
+        // 1. Get AI Audio
+        const response = await fetch('/speak_question', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text: q})
+        });
+        const data = await response.json();
+        
+        const audio = new Audio(data.audio_url);
+        audio.play();
+
+        audio.onended = async () => {
+            document.getElementById('status-text').innerText = "Listening for your answer...";
+            document.getElementById('stt-output').innerText = "Listening...";
+            
+            // 2. Listen for Answer
+            const sttRes = await fetch('/listen_answer', {method: 'POST'});
+            const sttData = await sttRes.json();
+            
+            const answer = sttData.text || "No response recorded.";
+            document.getElementById('stt-output').innerText = answer;
+            answers.push(answer);
+            
+            currentIdx++;
+            document.getElementById('status-text').innerText = "Ready for next question.";
+            if (currentIdx >= questions.length) {
+                document.getElementById('next-btn').innerText = "Finish & Analyze";
+            }
+        };
+    }
+
+    function submitInterview() {
+        const form = document.getElementById('interview-form');
+        answers.forEach(a => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'answers';
+            input.value = a;
+            form.appendChild(input);
+        });
+        form.submit();
+    }
+</script>
+{% endblock %}

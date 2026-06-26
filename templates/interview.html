@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <div class="glass interview-box">
+        <h2 style="margin-bottom: 2rem;">AIVI Session in Progress</h2>
+        
+        <form action="{{ url_for('main.submit', interview_id=interview_id) }}" method="POST">
+            {% for q in questions %}
+                <div class="question-card" style="margin-bottom: 3rem; text-align: left;">
+                    <p class="question-text">{{ q }}</p>
+                    <textarea name="answers" placeholder="Describe your experience or solution..." required></textarea>
+                </div>
+            {% endfor %}
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn-primary" style="flex: 2;">Finalize Responses</button>
+                <button type="button" class="btn-secondary" style="flex: 1; border-color: #ef4444; color: #ef4444;" onclick="if(confirm('Quit now and get results for answered questions?')) document.querySelector('form').submit()">Quit & Analyze</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
