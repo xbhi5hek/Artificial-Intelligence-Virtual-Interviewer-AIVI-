@@ -1,4 +1,4 @@
-name: Python Flask CI
+name: AIVI
 
 on:
   push:
