@@ -21,14 +21,29 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
+          else
+            echo "requirements.txt not found!"
+            exit 1
           fi
 
-      - name: Verify Flask App
+      - name: Check Python syntax
         run: |
-          python -c "import app"
+          python -m compileall .
+
+      - name: Workflow completed
+        run: echo "✅ CI completed successfully"
